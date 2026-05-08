@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last Game Studio — Realistic Agriculture Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --green-dark: #1a3c1a;
+            --green-primary: #2d6a2d;
+            --green-light: #4a9e4a;
+            --gold: #d4a843;
+            --gold-light: #f0d78c;
+            --dark: #0d1f0d;
+            --dark-card: #142814;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0b8a0;
+            --border: #2a4a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .brand {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* NAVIGATION */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(13, 31, 13, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .nav.scrolled {
+            padding: 0.5rem 2rem;
+            background: rgba(13, 31, 13, 0.95);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: 1rem;
+            padding-left: 1rem;
+            border-left: 1px solid var(--border);
+        }
+
+        .lang-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--green-primary);
+            color: white;
+            border-color: var(--green-primary);
+        }
+
+        .lang-btn:hover {
+            border-color: var(--green-light);
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--green-dark) 50%, var(--dark) 100%);
+            z-index: 0;
+        }
+
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            33% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+            66% { transform: translateY(50px) translateX(-30px); opacity: 0.2; }
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(45, 106, 45, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(45, 106, 45, 0.1) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(212, 168, 67, 0.15);
+            border: 1px solid var(--gold);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold-light);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .hero-badge .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero h1 .accent {
+            color: var(--gold);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1 .accent::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(212, 168, 67, 0.3);
+            border-radius: 4px;
+            z-index: -1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.35rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--dark);
+            border-color: var(--gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(212, 168, 67, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--green-light);
+            transform: translateY(-3px);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.3rem;
+        }
+
+        /* SECTIONS GENERAL */
+        section {
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: rgba(74, 158, 74, 0.15);
+            border: 1px solid var(--green-light);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--green-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* THE PITCH */
+        .pitch {
+            background: var(--dark-card);
+        }
+
+        .pitch-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .pitch-visual {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--dark) 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .pitch-visual::before {
+            content: '🚜';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8rem;
+            opacity: 0.3;
+        }
+
+        .pitch-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pitch-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .pitch-points {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .pitch-points li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .pitch-points li::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            background: rgba(74, 158, 74, 0.2);
+            color: var(--green-light);
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* FEATURES */
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green-light), var(--gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--green-light);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* MEDIA GALLERY */
+        .media {
+            background: var(--dark-card);
+        }
+
+        .gallery-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            aspect-ratio: 16/10;
+            background: linear-gradient(135deg, var(--green-dark), var(--dark));
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            border-color: var(--green-light);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+        }
+
+        .gallery-item span {
+            opacity: 0.5;
+        }
+
+        /* COMMUNITY */
+        .community-stats {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .community-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .community-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .community-btn:hover {
+            background: var(--green-dark);
+            border-color: var(--green-light);
+            transform: translateY(-4px);
+        }
+
+        /* DEVLOG */
+        .devlog {
+            background: var(--dark-card);
+        }
+
+        .devlog-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .devlog-item {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .devlog-item:hover {
+            padding-left: 1rem;
+        }
+
+        .devlog-date {
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .devlog-date .day {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .devlog-date .month {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .devlog-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .devlog-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .devlog-tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: rgba(74, 158, 74, 0.15);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--green-light);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        /* TIERS */
+        .tiers-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tier-card {
+            background: var(--dark-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .tier-card.featured {
+            border-color: var(--gold);
+            background: linear-gradient(180deg, rgba(212, 168, 67, 0.1) 0%, var(--dark-card) 100%);
+            transform: scale(1.05);
+        }
+
+        .tier-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.3rem 1rem;
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--green-light);
+        }
+
+        .tier-card.featured:hover {
+            transform: scale(1.05) translateY(-8px);
+        }
+
+        .tier-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin: 1rem 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .tier-price span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .tier-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .tier-features {
+            list-style: none;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .tier-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .tier-features li:last-child {
+            border-bottom: none;
+        }
+
+        .tier-btn {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        /* VOTING */
+        .voting {
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--dark) 100%);
+        }
+
+        .voting-preview {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+        }
+
+        .vote-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .vote-item:hover {
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+        }
+
+        .vote-bar-bg {
+            width: 200px;
+            height: 8px;
+            background: var(--dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .vote-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-light), var(--gold));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        /* FAQ */
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 1.5rem 0;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.3s;
+        }
+
+        .faq-question:hover {
+            color: var(--gold);
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+            padding-bottom: 1.5rem;
+        }
+
+        .faq-answer p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ROADMAP */
+        .roadmap {
+            background: var(--dark-card);
+        }
+
+        .roadmap-timeline {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .roadmap-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--green-light), var(--gold));
+            border-radius: 3px;
+        }
+
+        .roadmap-phase {
+            position: relative;
+            padding-bottom: 3rem;
+            padding-left: 2rem;
+        }
+
+        .roadmap-phase::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 0.5rem;
+            width: 15px;
+            height: 15px;
+            background: var(--gold);
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+        }
+
+        .roadmap-phase.completed::before {
+            background: var(--green-light);
+        }
+
+        .roadmap-phase.active::before {
+            background: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 168, 67, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .phase-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .phase-status.completed {
+            background: rgba(74, 158, 74, 0.2);
+            color: var(--green-light);
+        }
+
+        .phase-status.active {
+            background: rgba(212, 168, 67, 0.2);
+            color: var(--gold);
+        }
+
+        .phase-status.upcoming {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+        }
+
+        .roadmap-phase h4 {
+            font-size: 1.3rem;
+        }
+
+        .roadmap-phase p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* PRESS */
+        .press-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .press-card {
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .press-card:hover {
+            border-color: var(--green-light);
+            transform: translateY(-4px);
+        }
+
+        .press-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .press-card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .press-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-col h4 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .pitch-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            
+            .tier-card.featured {
+                transform: none;
+            }
+            
+            .tier-card.featured:hover {
+                transform: translateY(-8px);
+            }
+            
+            section {
+                padding: 4rem 1rem;
+            }
+        }
+
+        /* ANIMATED ELEMENTS */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="nav" id="nav">
+        <a href="#" class="brand">LAST GAME STUDIO</a>
+        <div class="nav-links">
+            <a href="#pitch" data-en="The Game" data-es="El Juego">The Game</a>
+            <a href="#features" data-en="Features" data-es="Características">Features</a>
+            <a href="#tiers" data-en="Back" data-es="Apoyar">Back</a>
+            <a href="#roadmap" data-en="Roadmap" data-es="Hoja de Ruta">Roadmap</a>
+            <a href="#faq" data-en="FAQ" data-es="Preguntas">FAQ</a>
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                <button class="lang-btn" onclick="setLang('es')">ES</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-particles" id="particles"></div>
+        
+        <div class="hero-content">
+            <div class="hero-badge reveal-scale">
+                <span class="pulse"></span>
+                <span data-en="NOW IN DEVELOPMENT" data-es="AHORA EN DESARROLLO">NOW IN DEVELOPMENT</span>
+            </div>
+            
+            <h1 class="reveal">
+                <span data-en="Build Your" data-es="Construye Tu">Build Your</span>
+                <span class="accent" data-en="Agricultural Empire" data-es="Imperio Agrícola">Agricultural Empire</span>
+            </h1>
+            
+            <p class="hero-subtitle reveal" data-en="The most realistic farming simulation ever made. Real crops, real soil, real machinery. No shortcuts — just the grind, the growth, and the glory." data-es="La simulación agrícola más realista jamás creada. Cultivos reales, suelo real, maquinaria real. Sin atajos — solo el esfuerzo, el crecimiento y la gloria.">
+                The most realistic farming simulation ever made. Real crops, real soil, real machinery. No shortcuts — just the grind, the growth, and the glory.
+            </p>
+            
+            <div class="hero-cta reveal">
+                <a href="#tiers" class="btn btn-primary" data-en="🌾 Back the Project" data-es="🌾 Apoyar el Proyecto">🌾 Back the Project</a>
+                <a href="#community" class="btn btn-secondary" data-en="Join Discord" data-es="Unirse a Discord">Join Discord</a>
+            </div>
+            
+            <div class="hero-stats reveal">
+                <div class="stat">
+                    <div class="stat-number" id="stat-backers">0</div>
+                    <div class="stat-label" data-en="BACKERS" data-es="PATROCINADORES">BACKERS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="stat-funded">0%</div>
+                    <div class="stat-label" data-en="FUNDED" data-es="FINANCIADO">FUNDED</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="stat-days">30</div>
+                    <div class="stat-label" data-en="DAYS LEFT" data-es="DÍAS REST.">DAYS LEFT</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE PITCH -->
+    <section class="pitch" id="pitch">
+        <div class="pitch-grid">
+            <div class="pitch-visual reveal-left"></div>
+            <div class="pitch-content reveal-right">
+                <div class="section-label" data-en="THE VISION" data-es="LA VISIÓN">THE VISION</div>
+                <h3 data-en="Real Agriculture. Real Science. Real Game." data-es="Agricultura Real. Ciencia Real. Juego Real.">Real Agriculture. Real Science. Real Game.</h3>
+                <p data-en="We're not making another cartoon farm simulator. We're building a game where every decision matters — soil pH, crop rotation, weather patterns, market prices. If you studied agriculture, you'll feel at home. If you didn't, you'll learn the real deal." data-es="No estamos haciendo otro simulador de granja de dibujos animados. Estamos construyendo un juego donde cada decisión importa — pH del suelo, rotación de cultivos, patrones climáticos, precios de mercado. Si estudiaste agricultura, te sentirás como en casa. Si no, aprenderás de verdad.">
+                    We're not making another cartoon farm simulator. We're building a game where every decision matters — soil pH, crop rotation, weather patterns, market prices. If you studied agriculture, you'll feel at home. If you didn't, you'll learn the real deal.
+                </p>
+                <p data-en="This is a passion project born from real agricultural engineering knowledge. Every tractor model is researched. Every crop growth cycle is accurate. This is the farming game for people who take farming seriously." data-es="Este es un proyecto nacido del conocimiento real de ingeniería agrícola. Cada modelo de tractor está investigado. Cada ciclo de crecimiento de cultivos es preciso. Este es el juego de granja para personas que se toman la agricultura en serio.">
+                    This is a passion project born from real agricultural engineering knowledge. Every tractor model is researched. Every crop growth cycle is accurate. This is the farming game for people who take farming seriously.
+                </p>
+                <ul class="pitch-points">
+                    <li data-en="Research-based crop and soil simulation" data-es="Simulación de cultivos y suelo basada en investigación">Research-based crop and soil simulation</li>
+                    <li data-en="Licensed and modeled real-world machinery" data-es="Maquinaria real licenciada y modelada">Licensed and modeled real-world machinery</li>
+                    <li data-en="Dynamic weather and market systems" data-es="Sistemas dinámicos de clima y mercado">Dynamic weather and market systems</li>
+                    <li data-en="No pay-to-win, no fake timers" data-es="Sin pay-to-win, sin temporizadores falsos">No pay-to-win, no fake timers</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="GAME FEATURES" data-es="CARACTERÍSTICAS">GAME FEATURES</div>
+            <h2 data-en="What Makes This Different" data-es="Qué Hace Esto Diferente">What Makes This Different</h2>
+            <p data-en="Every feature is built around one question: does this feel real?" data-es="Cada característica se construye alrededor de una pregunta: ¿se siente real?">Every feature is built around one question: does this feel real?</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <span class="feature-icon">🌱</span>
+                <h3 data-en="Soil Science Engine" data-es="Motor de Ciencia del Suelo">Soil Science Engine</h3>
+                <p data-en="Real pH levels, nitrogen cycles, moisture retention. Your soil remembers what you planted last season. Ignore it and watch your yields crash." data-es="Niveles reales de pH, ciclos de nitrógeno, retención de humedad. Tu suelo recuerda lo que plantaste la temporada pasada. Ignóralo y observa cómo se desploman tus cosechas.">Real pH levels, nitrogen cycles, moisture retention. Your soil remembers what you planted last season. Ignore it and watch your yields crash.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <span class="feature-icon">🚜</span>
+                <h3 data-en="Licensed Machinery" data-es="Maquinaria Licenciada">Licensed Machinery</h3>
+                <p data-en="John Deere, Case IH, Fendt — researched and modeled from real specs. Horsepower, fuel consumption, maintenance schedules. Your garage matters." data-es="John Deere, Case IH, Fendt — investigada y modelada desde especificaciones reales. Potencia, consumo de combustible, calendarios de mantenimiento. Tu garaje importa.">John Deere, Case IH, Fendt — researched and modeled from real specs. Horsepower, fuel consumption, maintenance schedules. Your garage matters.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <span class="feature-icon">🌦️</span>
+                <h3 data-en="Living Weather" data-es="Clima Vivo">Living Weather</h3>
+                <p data-en="Micro-climates, seasonal shifts, unexpected storms. Real historical weather data from regions around the world. Adapt or go bankrupt." data-es="Microclimas, cambios estacionales, tormentas inesperadas. Datos climáticos históricos reales de regiones de todo el mundo. Adáptate o quiebra.">Micro-climates, seasonal shifts, unexpected storms. Real historical weather data from regions around the world. Adapt or go bankrupt.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <span class="feature-icon">📈</span>
+                <h3 data-en="Live Market" data-es="Mercado en Vivo">Live Market</h3>
+                <p data-en="Crop prices fluctuate based on global supply, demand, and events. Sell at the right time or watch your profits rot in the silo." data-es="Los precios de los cultivos fluctúan según la oferta, la demanda y los eventos globales. Vende en el momento adecuado o observa cómo se pudren tus ganancias en el silo.">Crop prices fluctuate based on global supply, demand, and events. Sell at the right time or watch your profits rot in the silo.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <span class="feature-icon">🏗️</span>
+                <h3 data-en="Build Your Farm" data-es="Construye Tu Granja">Build Your Farm</h3>
+                <p data-en="Barns, silos, irrigation systems, greenhouses. Every building serves a purpose and costs real money to maintain. Plan your expansion carefully." data-es="Graneros, silos, sistemas de riego, invernaderos. Cada edificio tiene un propósito y cuesta dinero real mantenerlo. Planifica tu expansión con cuidado.">Barns, silos, irrigation systems, greenhouses. Every building serves a purpose and costs real money to maintain. Plan your expansion carefully.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <span class="feature-icon">👥</span>
+                <h3 data-en="Community Driven" data-es="Impulsado por la Comunidad">Community Driven</h3>
+                <p data-en="Backers at $12+ get voting power. You propose features, the community votes, we build what you actually want. This is your game too." data-es="Los patrocinadores de $12+ obtienen poder de voto. Tú propones características, la comunidad vota, nosotros construimos lo que realmente quieres. Este es tu juego también.">Backers at $12+ get voting power. You propose features, the community votes, we build what you actually want. This is your game too.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MEDIA GALLERY -->
+    <section class="media" id="media">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="MEDIA" data-es="MEDIOS">MEDIA</div>
+            <h2 data-en="Early Looks" data-es="Primeros Vistazos">Early Looks</h2>
+            <p data-en="Work in progress — but we want you to see everything, even the messy parts." data-es="Trabajo en progreso — pero queremos que veas todo, incluso las partes desordenadas.">Work in progress — but we want you to see everything, even the messy parts.</p>
+        </div>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item reveal"><span>🌾</span></div>
+            <div class="gallery-item reveal"><span>🚜</span></div>
+            <div class="gallery-item reveal"><span>🏞️</span></div>
+            <div class="gallery-item reveal"><span>🌻</span></div>
+            <div class="gallery-item reveal"><span>⚙️</span></div>
+            <div class="gallery-item reveal"><span>📊</span></div>
+        </div>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section id="community">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="COMMUNITY" data-es="COMUNIDAD">COMMUNITY</div>
+            <h2 data-en="Join the Movement" data-es="Únete al Movimiento">Join the Movement</h2>
+            <p data-en="We're building this together. Every voice matters." data-es="Estamos construyendo esto juntos. Cada voz importa.">We're building this together. Every voice matters.</p>
+        </div>
+        
+        <div class="community-stats reveal">
+            <div class="stat">
+                <div class="stat-number" id="discord-members">0</div>
+                <div class="stat-label" data-en="DISCORD" data-es="DISCORD">DISCORD</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="twitter-followers">0</div>
+                <div class="stat-label" data-en="TWITTER" data-es="TWITTER">TWITTER</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="newsletter-subs">0</div>
+                <div class="stat-label" data-en="NEWSLETTER" data-es="BOLETÍN">NEWSLETTER</div>
+            </div>
+        </div>
+        
+        <div class="community-links reveal">
+            <a href="#" class="community-btn">💬 <span data-en="Join Discord" data-es="Unirse a Discord">Join Discord</span></a>
+            <a href="#" class="community-btn">🐦 <span data-en="Follow on X" data-es="Seguir en X">Follow on X</a>
+            <a href="#" class="community-btn">📺 <span data-en="YouTube" data-es="YouTube">YouTube</span></a>
+            <a href="#" class="community-btn">📧 <span data-en="Newsletter" data-es="Boletín">Newsletter</span></a>
+        </div>
+    </section>
+
+    <!-- DEVLOG -->
+    <section class="devlog" id="devlog">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="DEVLOG" data-es="DEVLOG">DEVLOG</div>
+            <h2 data-en="Building in Public" data-es="Construyendo en Público">Building in Public</h2>
+            <p data-en="Raw updates. No fluff. See exactly where we are." data-es="Actualizaciones crudas. Sin relleno. Ve exactamente dónde estamos.">Raw updates. No fluff. See exactly where we are.</p>
+        </div>
+        
+        <div class="devlog-list">
+            <div class="devlog-item reveal">
+                <div class="devlog-date">
+                    <div class="day">08</div>
+                    <div class="month">MAY</div>
+                </div>
+                <div class="devlog-content">
+                    <h4 data-en="Campaign Planning & Community Setup" data-es="Planificación de Campaña y Configuración de Comunidad">Campaign Planning & Community Setup</h4>
+                    <p data-en="Defining backer tiers, voting system mechanics, and building the community hub. Website going live this week." data-es="Definiendo niveles de patrocinadores, mecánicas del sistema de votación y construyendo el centro de comunidad. El sitio web se lanza esta semana.">Defining backer tiers, voting system mechanics, and building the community hub. Website going live this week.</p>
+                    <span class="devlog-tag">META</span>
+                </div>
+            </div>
+            
+            <div class="devlog-item reveal">
+                <div class="devlog-date">
+                    <div class="day">01</div>
+                    <div class="month">MAY</div>
+                </div>
+                <div class="devlog-content">
+                    <h4 data-en="Project Restructure from Scratch" data-es="Reestructuración del Proyecto desde Cero">Project Restructure from Scratch</h4>
+                    <p data-en="Starting the core engine fresh. New architecture for the 3D agricultural simulation. Terrain generation system in progress." data-es="Comenzando el motor principal desde cero. Nueva arquitectura para la simulación agrícola 3D. Sistema de generación de terreno en progreso.">Starting the core engine fresh. New architecture for the 3D agricultural simulation. Terrain generation system in progress.</p>
+                    <span class="devlog-tag">ENGINE</span>
+                </div>
+            </div>
+            
+            <div class="devlog-item reveal">
+                <div class="devlog-date">
+                    <div class="day">15</div>
+                    <div class="month">APR</div>
+                </div>
+                <div class="devlog-content">
+                    <h4 data-en="Research Phase: Machinery Database" data-es="Fase de Investigación: Base de Datos de Maquinaria">Research Phase: Machinery Database</h4>
+                    <p data-en="Compiled initial database of 50+ real agricultural machines. Specs, capabilities, compatibility. This will feed the in-game shop system." data-es="Compilada base de datos inicial de 50+ máquinas agrícolas reales. Especificaciones, capacidades, compatibilidad. Esto alimentará el sistema de tienda del juego.">Compiled initial database of 50+ real agricultural machines. Specs, capabilities, compatibility. This will feed the in-game shop system.</p>
+                    <span class="devlog-tag">RESEARCH</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIERS -->
+    <section id="tiers">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="BACKER TIERS" data-es="NIVELES DE PATROCINIO">BACKER TIERS</div>
+            <h2 data-en="Support the Vision" data-es="Apoya la Visión">Support the Vision</h2>
+            <p data-en="Every dollar goes directly into development. No executives, no overhead — just game." data-es="Cada dólar va directamente al desarrollo. Sin ejecutivos, sin gastos generales — solo juego.">Every dollar goes directly into development. No executives, no overhead — just game.</p>
+        </div>
+        
+        <div class="tiers-grid">
+            <div class="tier-card reveal">
+                <div class="tier-name" data-en="Seedling" data-es="Brote">Seedling</div>
+                <div class="tier-price">$1<span>/mo</span></div>
+                <ul class="tier-features">
+                    <li data-en="Discord access" data-es="Acceso a Discord">Discord access</li>
+                    <li data-en="Backer badge" data-es="Insignia de patrocinador">Backer badge</li>
+                    <li data-en="Monthly newsletter" data-es="Boletín mensual">Monthly newsletter</li>
+                    <li data-en="Wallpaper pack" data-es="Pack de fondos de pantalla">Wallpaper pack</li>
+                </ul>
+                <button class="btn btn-secondary tier-btn" data-en="Choose" data-es="Elegir">Choose</button>
+            </div>
+            
+            <div class="tier-card reveal">
+                <div class="tier-name" data-en="Farmer" data-es="Granjero">Farmer</div>
+                <div class="tier-price">$5<span>/mo</span></div>
+                <ul class="tier-features">
+                    <li data-en="Everything in Seedling" data-es="Todo en Brote">Everything in Seedling</li>
+                    <li data-en="Beta access (when ready)" data-es="Acceso beta (cuando esté listo)">Beta access (when ready)</li>
+                    <li data-en="Devlog early access" data-es="Acceso anticipado al devlog">Devlog early access</li>
+                    <li data-en="Name in credits" data-es="Nombre en créditos">Name in credits</li>
+                </ul>
+                <button class="btn btn-secondary tier-btn" data-en="Choose" data-es="Elegir">Choose</button>
+            </div>
+            
+            <div class="tier-card featured reveal">
+                <div class="tier-name" data-en="Agronomist" data-es="Agrónomo">Agronomist</div>
+                <div class="tier-price">$12<span>/mo</span></div>
+                <ul class="tier-features">
+                    <li data-en="Everything in Farmer" data-es="Todo en Granjero">Everything in Farmer</li>
+                    <li data-en="VOTING POWER 🗳️" data-es="PODER DE VOTO 🗳️">VOTING POWER 🗳️</li>
+                    <li data-en="Propose features" data-es="Proponer características">Propose features</li>
+                    <li data-en="Private backer channel" data-es="Canal privado de patrocinadores">Private backer channel</li>
+                    <li data-en="Monthly AMA access" data-es="Acceso AMA mensual">Monthly AMA access</li>
+                </ul>
+                <button class="btn btn-primary tier-btn" data-en="Choose" data-es="Elegir">Choose</button>
+            </div>
+            
+            <div class="tier-card reveal">
+                <div class="tier-name" data-en="Tycoon" data-es="Magnate">Tycoon</div>
+                <div class="tier-price">$25<span>/mo</span></div>
+                <ul class="tier-features">
+                    <li data-en="Everything in Agronomist" data-es="Todo en Agrónomo">Everything in Agronomist</li>
+                    <li data-en="Alpha access" data-es="Acceso alfa">Alpha access</li>
+                    <li data-en="Exclusive machinery skin" data-es="Skin de maquinaria exclusiva">Exclusive machinery skin</li>
+                    <li data-en="Direct dev contact" data-es="Contacto directo con devs">Direct dev contact</li>
+                </ul>
+                <button class="btn btn-secondary tier-btn" data-en="Choose" data-es="Elegir">Choose</button>
+            </div>
+            
+            <div class="tier-card reveal">
+                <div class="tier-name" data-en="Executive" data-es="Ejecutivo">Executive</div>
+                <div class="tier-price">$50+<span>/mo</span></div>
+                <ul class="tier-features">
+                    <li data-en="Everything in Tycoon" data-es="Todo en Magnate">Everything in Tycoon</li>
+                    <li data-en="Executive council seat" data-es="Asiento en consejo ejecutivo">Executive council seat</li>
+                    <li data-en="Quarterly strategy calls" data-es="Llamadas estratégicas trimestrales">Quarterly strategy calls</li>
+                    <li data-en="Custom farm design consult" data-es="Consulta de diseño de granja personalizado">Custom farm design consult</li>
+                    <li data-en="Lifetime game access" data-es="Acceso de por vida al juego">Lifetime game access</li>
+                </ul>
+                <button class="btn btn-secondary tier-btn" data-en="Choose" data-es="Elegir">Choose</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOTING SYSTEM -->
+    <section class="voting" id="voting">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="VOTING POWER" data-es="PODER DE VOTO">VOTING POWER</div>
+            <h2 data-en="You Decide What Gets Built" data-es="Tú Decides Qué Se Construye">You Decide What Gets Built</h2>
+            <p data-en="Backers at $12+ get executive voting power. Here's how it works:" data-es="Los patrocinadores de $12+ obtienen poder de voto ejecutivo. Así es como funciona:">Backers at $12+ get executive voting power. Here's how it works:</p>
+        </div>
+        
+        <div class="voting-preview reveal">
+            <div class="vote-item">
+                <div>
+                    <h4 data-en="🌽 Add corn as first playable crop" data-es="🌽 Añadir maíz como primer cultivo jugable">🌽 Add corn as first playable crop</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;" data-en="Proposed by @farmer_joe — 234 votes" data-es="Propuesto por @farmer_joe — 234 votos">Proposed by @farmer_joe — 234 votes</p>
+                </div>
+                <div class="vote-bar-bg">
+                    <div class="vote-bar-fill" style="width: 78%"></div>
+                </div>
+            </div>
+            
+            <div class="vote-item">
+                <div>
+                    <h4 data-en="🚜 Start with John Deere 6R series" data-es="🚜 Comenzar con serie John Deere 6R">🚜 Start with John Deere 6R series</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;" data-en="Proposed by @agri_gamer — 198 votes" data-es="Propuesto por @agri_gamer — 198 votos">Proposed by @agri_gamer — 198 votes</p>
+                </div>
+                <div class="vote-bar-bg">
+                    <div class="vote-bar-fill" style="width: 66%"></div>
+                </div>
+            </div>
+            
+            <div class="vote-item">
+                <div>
+                    <h4 data-en="🌧️ Dynamic weather system first" data-es="🌧️ Sistema de clima dinámico primero">🌧️ Dynamic weather system first</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;" data-en="Proposed by @weather_watcher — 156 votes" data-es="Propuesto por @weather_watcher — 156 votos">Proposed by @weather_watcher — 156 votes</p>
+                </div>
+                <div class="vote-bar-bg">
+                    <div class="vote-bar-fill" style="width: 52%"></div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <p style="color: var(--text-secondary); font-size: 1rem;" data-en="This is a preview — real voting starts when we hit 100 Agronomist backers!" data-es="Esta es una vista previa — ¡la votación real comienza cuando alcancemos 100 patrocinadores Agrónomos!">This is a preview — real voting starts when we hit 100 Agronomist backers!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="FAQ" data-es="PREGUNTAS">FAQ</div>
+            <h2 data-en="Real Answers, No BS" data-es="Respuestas Reales, Sin Rodeos">Real Answers, No BS</h2>
+            <p data-en="Everything you need to know before backing." data-es="Todo lo que necesitas saber antes de patrocinar.">Everything you need to know before backing.</p>
+        </div>
+        
+        <div class="faq-list">
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="When will the beta be ready?" data-es="¿Cuándo estará lista la beta?">When will the beta be ready?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="We're targeting a closed beta within 3-4 months from campaign launch. Agronomist tier and above get first access. Farmer tier gets access when we open it wider. We'll be honest about delays if they happen — no fake dates." data-es="Apuntamos a una beta cerrada dentro de 3-4 meses desde el lanzamiento de la campaña. El nivel Agrónomo y superior obtiene acceso primero. El nivel Granjero obtiene acceso cuando lo abramos más. Seremos honestos sobre retrasos si ocurren — sin fechas falsas.">We're targeting a closed beta within 3-4 months from campaign launch. Agronomist tier and above get first access. Farmer tier gets access when we open it wider. We'll be honest about delays if they happen — no fake dates.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="What platforms will this be on?" data-es="¿En qué plataformas estará?">What platforms will this be on?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="Starting with mobile (iOS/Android) for the prototype/beta phase. PC and console are stretch goals that depend on funding level. We want to nail the core experience first before expanding platforms." data-es="Comenzando con móvil (iOS/Android) para la fase de prototipo/beta. PC y consola son objetivos adicionales que dependen del nivel de financiación. Queremos perfeccionar la experiencia principal antes de expandir plataformas.">Starting with mobile (iOS/Android) for the prototype/beta phase. PC and console are stretch goals that depend on funding level. We want to nail the core experience first before expanding platforms.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="Can I get a refund?" data-es="¿Puedo obtener un reembolso?">Can I get a refund?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="Yes. Anytime. No questions asked. You lose access to backer privileges (voting, beta, Discord channels) but you get your money back. We believe in this enough that we don't need to trap your cash." data-es="Sí. En cualquier momento. Sin preguntas. Pierdes acceso a privilegios de patrocinador (votación, beta, canales de Discord) pero recuperas tu dinero. Creemos en esto lo suficiente como para no necesitar atrapar tu dinero.">Yes. Anytime. No questions asked. You lose access to backer privileges (voting, beta, Discord channels) but you get your money back. We believe in this enough that we don't need to trap your cash.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="How does the voting system work?" data-es="¿Cómo funciona el sistema de votación?">How does the voting system work?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="Agronomist tier ($12+) and above get voting credits each month. You can propose features, vote on existing proposals, or delegate your votes. The top-voted proposals each month enter our development pipeline. We show you exactly where each proposal stands." data-es="El nivel Agrónomo ($12+) y superior obtiene créditos de votación cada mes. Puedes proponer características, votar en propuestas existentes o delegar tus votos. Las propuestas más votadas cada mes entran en nuestra pipeline de desarrollo. Te mostramos exactamente dónde se encuentra cada propuesta.">Agronomist tier ($12+) and above get voting credits each month. You can propose features, vote on existing proposals, or delegate your votes. The top-voted proposals each month enter our development pipeline. We show you exactly where each proposal stands.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="Why are you anonymous?" data-es="¿Por qué eres anónimo?">Why are you anonymous?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="Real life stuff. The game and the vision matter more than who's behind it right now. We might reveal identity later — the focus should be on what we're building, not who's building it. The code speaks for itself." data-es="Cosas de la vida real. El juego y la visión importan más que quién está detrás ahora mismo. Podríamos revelar la identidad más tarde — el enfoque debería estar en lo que estamos construyendo, no en quién lo construye. El código habla por sí solo.">Real life stuff. The game and the vision matter more than who's behind it right now. We might reveal identity later — the focus should be on what we're building, not who's building it. The code speaks for itself.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span data-en="How long until full release?" data-es="¿Cuánto hasta el lanzamiento completo?">How long until full release?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p data-en="Honest answer: 2-3 years for the full 3D game with all planned features. We're building a realistic simulation, not a quick cash grab. Shortcuts with money can speed some things up, but not everything. We're in this for the long haul and we want you to know that upfront." data-es="Respuesta honesta: 2-3 años para el juego 3D completo con todas las características planificadas. Estamos construyendo una simulación realista, no una estafa rápida. Los atajos con dinero pueden acelerar algunas cosas, pero no todo. Estamos en esto a largo plazo y queremos que lo sepas de antemano.">Honest answer: 2-3 years for the full 3D game with all planned features. We're building a realistic simulation, not a quick cash grab. Shortcuts with money can speed some things up, but not everything. We're in this for the long haul and we want you to know that upfront.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="roadmap" id="roadmap">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="ROADMAP" data-es="HOJA DE RUTA">ROADMAP</div>
+            <h2 data-en="The Journey Ahead" data-es="El Camino por Delante">The Journey Ahead</h2>
+            <p data-en="Realistic timelines. No fantasy dates." data-es="Cronogramas realistas. Sin fechas de fantasía.">Realistic timelines. No fantasy dates.</p>
+        </div>
+        
+        <div class="roadmap-timeline">
+            <div class="roadmap-phase completed reveal">
+                <div class="phase-header">
+                    <h4 data-en="Phase 1: Foundation" data-es="Fase 1: Fundación">Phase 1: Foundation</h4>
+                    <span class="phase-status completed" data-en="Done" data-es="Hecho">Done</span>
+                </div>
+                <p data-en="Concept locked, architecture planned, machinery database compiled, community framework designed. The blueprint is ready." data-es="Concepto definido, arquitectura planeada, base de datos de maquinaria compilada, marco de comunidad diseñado. El plano está listo.">Concept locked, architecture planned, machinery database compiled, community framework designed. The blueprint is ready.</p>
+            </div>
+            
+            <div class="roadmap-phase active reveal">
+                <div class="phase-header">
+                    <h4 data-en="Phase 2: Campaign & Prototype" data-es="Fase 2: Campaña y Prototipo">Phase 2: Campaign & Prototype</h4>
+                    <span class="phase-status active" data-en="Active" data-es="Activo">Active</span>
+                </div>
+                <p data-en="Month 1: Crowdfunding campaign, core engine build, basic terrain and crop systems, first Discord community growth. Build the plane while flying it." data-es="Mes 1: Campaña de financiación, construcción del motor principal, sistemas básicos de terreno y cultivos, primer crecimiento de comunidad Discord. Construir el avión mientras vuela.">Month 1: Crowdfunding campaign, core engine build, basic terrain and crop systems, first Discord community growth. Build the plane while flying it.</p>
+            </div>
+            
+            <div class="roadmap-phase reveal">
+                <div class="phase-header">
+                    <h4 data-en="Phase 3: Closed Beta" data-es="Fase 3: Beta Cerrada">Phase 3: Closed Beta</h4>
+                    <span class="phase-status upcoming" data-en="Q3 2026" data-es="T3 2026">Q3 2026</span>
+                </div>
+                <p data-en="Months 2-4: Closed beta for Agronomist+ backers. Core loop functional — plant, grow, harvest, sell. Community voting system live. Iterate based on real feedback." data-es="Meses 2-4: Beta cerrada para patrocinadores Agrónomo+. Bucle principal funcional — plantar, crecer, cosechar, vender. Sistema de votación de comunidad en vivo. Iterar basándose en feedback real.">Months 2-4: Closed beta for Agronomist+ backers. Core loop functional — plant, grow, harvest, sell. Community voting system live. Iterate based on real feedback.</p>
+            </div>
+            
+            <div class="roadmap-phase reveal">
+                <div class="phase-header">
+                    <h4 data-en="Phase 4: Early Access" data-es="Fase 4: Acceso Anticipado">Phase 4: Early Access</h4>
+                    <span class="phase-status upcoming" data-en="2027" data-es="2027">2027</span>
+                </div>
+                <p data-en="Expanded beta, more crops, more machinery, first economic systems. Mobile-first launch. Begin PC/console planning if funding allows." data-es="Beta expandida, más cultivos, más maquinaria, primeros sistemas económicos. Lanzamiento primero en móvil. Comenzar planificación de PC/consola si la financiación lo permite.">Expanded beta, more crops, more machinery, first economic systems. Mobile-first launch. Begin PC/console planning if funding allows.</p>
+            </div>
+            
+            <div class="roadmap-phase reveal">
+                <div class="phase-header">
+                    <h4 data-en="Phase 5: Full Release" data-es="Fase 5: Lanzamiento Completo">Phase 5: Full Release</h4>
+                    <span class="phase-status upcoming" data-en="2028+" data-es="2028+">2028+</span>
+                </div>
+                <p data-en="The full 3D vision. All planned features, all platforms, live economy, multiplayer. This is the finish line — and it's worth the wait." data-es="La visión 3D completa. Todas las características planificadas, todas las plataformas, economía en vivo, multijugador. Esta es la meta — y vale la espera.">The full 3D vision. All planned features, all platforms, live economy, multiplayer. This is the finish line — and it's worth the wait.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRESS KIT -->
+    <section id="press">
+        <div class="section-header reveal">
+            <div class="section-label" data-en="PRESS" data-es="PRENSA">PRESS</div>
+            <h2 data-en="For Streamers, Press & Creators" data-es="Para Streamers, Prensa y Creadores">For Streamers, Press & Creators</h2>
+            <p data-en="Everything you need to cover this story." data-es="Todo lo que necesitas para cubrir esta historia.">Everything you need to cover this story.</p>
+        </div>
+        
+        <div class="press-grid">
+            <div class="press-card reveal">
+                <div class="press-icon">📄</div>
+                <h4 data-en="Fact Sheet" data-es="Hoja de Datos">Fact Sheet</h4>
+                <p data-en="Game overview, key features, timeline, contact info. One page, all facts." data-es="Resumen del juego, características clave, cronograma, info de contacto. Una página, todos los datos.">Game overview, key features, timeline, contact info. One page, all facts.</p>
+                <a href="#" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.6rem 1.2rem;" data-en="Download PDF" data-es="Descargar PDF">Download PDF</a>
+            </div>
+            
+            <div class="press-card reveal">
+                <div class="press-icon">🖼️</div>
+                <h4 data-en="Media Kit" data-es="Kit de Medios">Media Kit</h4>
+                <p data-en="Logos, screenshots, concept art, brand guidelines. Ready to use." data-es="Logos, capturas de pantalla, arte conceptual, guías de marca. Listo para usar.">Logos, screenshots, concept art, brand guidelines. Ready to use.</p>
+                <a href="#" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.6rem 1.2rem;" data-en="Download ZIP" data-es="Descargar ZIP">Download ZIP</a>
+            </div>
+            
+            <div class="press-card reveal">
+                <div class="press-icon">🎥</div>
+                <h4 data-en="Video Assets" data-es="Recursos de Video">Video Assets</h4>
+                <p data-en="B-roll, trailers, devlog footage. For your videos, streams, and reviews." data-es="B-roll, trailers, footage de devlog. Para tus videos, streams y reseñas.">B-roll, trailers, devlog footage. For your videos, streams, and reviews.</p>
+                <a href="#" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.6rem 1.2rem;" data-en="Download" data-es="Descargar">Download</a>
+            </div>
+            
+            <div class="press-card reveal">
+                <div class="press-icon">✉️</div>
+                <h4 data-en="Contact" data-es="Contacto">Contact</h4>
+                <p data-en="Press inquiries, partnership proposals, interview requests. We reply fast." data-es="Consultas de prensa, propuestas de colaboración, solicitudes de entrevista. Respondemos rápido.">Press inquiries, partnership proposals, interview requests. We reply fast.</p>
+                <a href="mailto:press@lastgamestudio.com" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.6rem 1.2rem;" data-en="Email Us" data-es="Escríbenos">Email Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4 data-en="Game" data-es="Juego">Game</h4>
+                <a href="#pitch" data-en="The Vision" data-es="La Visión">The Vision</a>
+                <a href="#features" data-en="Features" data-es="Características">Features</a>
+                <a href="#roadmap" data-en="Roadmap" data-es="Hoja de Ruta">Roadmap</a>
+                <a href="#devlog" data-en="Devlog" data-es="Devlog">Devlog</a>
+            </div>
+            
+            <div class="footer-col">
+                <h4 data-en="Support" data-es="Apoyo">Support</h4>
+                <a href="#tiers" data-en="Backer Tiers" data-es="Niveles de Patrocinio">Backer Tiers</a>
+                <a href="#voting" data-en="Voting System" data-es="Sistema de Votación">Voting System</a>
+                <a href="#faq" data-en="FAQ" data-es="Preguntas">FAQ</a>
+                <a href="#" data-en="Refund Policy" data-es="Política de Reembolso">Refund Policy</a>
+            </div>
+            
+            <div class="footer-col">
+                <h4 data-en="Community" data-es="Comunidad">Community</h4>
+                <a href="#">Discord</a>
+                <a href="#">Twitter / X</a>
+                <a href="#">YouTube</a>
+                <a href="#">Newsletter</a>
+            </div>
+            
+            <div class="footer-col">
+                <h4 data-en="Legal" data-es="Legal">Legal</h4>
+                <a href="#" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
+                <a href="#" data-en="Terms of Service" data-es="Términos de Servicio">Terms of Service</a>
+                <a href="#" data-en="Cookie Policy" data-es="Política de Cookies">Cookie Policy</a>
+                <a href="#press" data-en="Press Kit" data-es="Kit de Prensa">Press Kit</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Last Game Studio. <span data-en="Built with dirt under our fingernails." data-es="Construido con tierra bajo las uñas.">Built with dirt under our fingernails.</span></p>
+        </div>
+    </footer>
+
+    <script>
+        // Generate particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 15 + 's';
+            p.style.animationDuration = (10 + Math.random() * 20) + 's';
+            particlesContainer.appendChild(p);
+        }
+
+        // Language Switcher
+        let currentLang = 'en';
+        
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+            });
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + lang);
+            });
+            document.documentElement.lang = lang;
+        }
+
+        // FAQ Toggle
+        function toggleFaq(btn) {
+            const item = btn.parentElement;
+            item.classList.toggle('open');
+        }
+
+        // Animated counters
+        function animateCounter(id, target, suffix = '') {
+            const el = document.getElementById(id);
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    let current = 0;
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        el.textContent = Math.floor(current) + suffix;
+                    }, 30);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(el);
+        }
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Nav scroll effect
+        window.addEventListener('scroll', () => {
+            document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Hero reveals
+        gsap.to('.hero .reveal', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power3.out',
+            delay: 0.3
+        });
+
+        gsap.to('.hero .reveal-scale', {
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: 'back.out(1.7)',
+            delay: 0.1
+        });
+
+        // Scroll reveals
+        gsap.utils.toArray('.reveal').forEach(el => {
+            if (!el.closest('.hero')) {
+                gsap.to(el, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            }
+        });
+
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 80%'
+                }
+            });
+        });
+
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 80%'
+                }
+            });
+        });
+
+        // Feature cards stagger
+        gsap.utils.toArray('.feature-card').forEach((card, i) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%'
+                }
+            });
+        });
+
+        // Tier cards
+        gsap.utils.toArray('.tier-card').forEach((card, i) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                delay: i * 0.15,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%'
+                }
+            });
+        });
+
+        // Gallery items
+        gsap.utils.toArray('.gallery-item').forEach((item, i) => {
+            gsap.to(item, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.5,
+                delay: i * 0.1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 85%'
+                }
+            });
+        });
+
+        // Roadmap phases
+        gsap.utils.toArray('.roadmap-phase').forEach((phase, i) => {
+            gsap.to(phase, {
+                opacity: 1,
+                x: 0,
+                duration: 0.8,
+                delay: i * 0.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: phase,
+                    start: 'top 80%'
+                }
+            });
+        });
+
+        // Vote bars animation
+        gsap.utils.toArray('.vote-bar-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            gsap.to(bar, {
+                width: width,
+                duration: 1.5,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: bar,
+                    start: 'top 80%'
+                }
+            });
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1,
+                        scrollTo: { y: target, offsetY: 80 },
+                        ease: 'power3.inOut'
+                    });
+                }
+            });
+        });
+
+        // Counter animations
+        animateCounter('stat-backers', 47);
+        animateCounter('stat-funded', 12, '%');
+        animateCounter('discord-members', 156);
+        animateCounter('twitter-followers', 423);
+        animateCounter('newsletter-subs', 89);
+
+        // Parallax effect for hero
+        gsap.to('.hero-grid', {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        gsap.to('.hero-particles', {
+            yPercent: -20,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+    </script>
+</body>
+</html>
