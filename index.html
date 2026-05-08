@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             --green-dark: #1a3c1a;
@@ -1005,7 +1004,174 @@
             font-size: 0.85rem;
         }
 
-        /* RESPONSIVE */
+        /* EQUIPMENT SHOWCASE — REALISTIC FIELD + SKETCHFAB */
+        .equipment-showcase {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%, 
+                #B8E6B8 20%,
+                #A5D86A 35%,
+                #8BC34A 50%,
+                #689F38 70%,
+                #33691E 100%
+            );
+        }
+
+        .equipment-showcase::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 60%, rgba(139,195,74,0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Horizon haze */
+        .equipment-showcase::after {
+            content: '';
+            position: absolute;
+            top: 35%;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: linear-gradient(to bottom, 
+                rgba(255,255,255,0.4) 0%, 
+                rgba(184,230,184,0.2) 50%,
+                transparent 100%
+            );
+            pointer-events: none;
+        }
+
+        .field-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 35%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                ),
+                linear-gradient(to bottom, #558B2F 0%, #33691E 60%, #1B5E20 100%);
+            transform-origin: bottom;
+            transform: perspective(500px) rotateX(25deg) scaleY(1.5);
+            pointer-events: none;
+        }
+
+        .grass-tufts {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: repeating-linear-gradient(
+                to right,
+                transparent 0px,
+                transparent 8px,
+                rgba(27,94,32,0.6) 8px,
+                rgba(27,94,32,0.6) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            filter: blur(0.5px);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .equipment-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 1200px;
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 80px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 0 60px rgba(0,0,0,0.2);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .equipment-container:hover {
+            transform: perspective(1000px) rotateX(2deg) scale(1.02);
+        }
+
+        .equipment-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .equipment-label {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 20;
+        }
+
+        .equipment-label h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a3c1a;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .equipment-label p {
+            font-size: 1.1rem;
+            color: #2d5a2d;
+            font-weight: 500;
+            text-shadow: 0 1px 5px rgba(255,255,255,0.4);
+        }
+
+        .equipment-caption {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 20;
+        }
+
+        .equipment-caption p {
+            font-size: 0.9rem;
+            color: #1a3c1a;
+            font-weight: 500;
+            text-shadow: 0 1px 5px rgba(255,255,255,0.5);
+        }
+
+        /* Floating dust particles for atmosphere */
+        .dust-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: dustFloat 8s infinite ease-in-out;
+        }
+
+        @keyframes dustFloat {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { transform: translateY(-100px) translateX(30px); opacity: 0.3; }
+            80% { opacity: 0.5; }
+        }
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -1061,6 +1227,7 @@
         <a href="#" class="brand">LAST GAME STUDIO</a>
         <div class="nav-links">
             <a href="#pitch" data-en="The Game" data-es="El Juego">The Game</a>
+            <a href="#equipment" data-en="Equipment" data-es="Equipo">Equipment</a>
             <a href="#features" data-en="Features" data-es="Características">Features</a>
             <a href="#tiers" data-en="Back" data-es="Apoyar">Back</a>
             <a href="#roadmap" data-en="Roadmap" data-es="Hoja de Ruta">Roadmap</a>
@@ -1077,7 +1244,6 @@
         <div class="hero-bg"></div>
         <div class="hero-grid"></div>
         <div class="hero-particles" id="particles"></div>
-        <canvas id="hero-3d" style="position: absolute; inset: 0; z-index: 1;"></canvas>
         
         <div class="hero-content">
             <div class="hero-badge reveal-scale">
@@ -1136,6 +1302,37 @@
                     <li data-en="No pay-to-win, no fake timers" data-es="Sin pay-to-win, sin temporizadores falsos">No pay-to-win, no fake timers</li>
                 </ul>
             </div>
+        </div>
+    </section>
+
+    <!-- EQUIPMENT SHOWCASE — REALISTIC FIELD + 3D SPRAYER -->
+    <section class="equipment-showcase" id="equipment">
+        <div class="field-ground"></div>
+        <div class="grass-tufts"></div>
+        
+        <div class="equipment-label reveal">
+            <h2 data-en="Real Equipment. Real Scale." data-es="Equipo Real. Escala Real.">Real Equipment. Real Scale.</h2>
+            <p data-en="Interact with a real self-propelled sprayer — the same type you'll operate in-game." data-es="Interactúa con un pulverizador autopropulsado real — el mismo tipo que operarás en el juego.">Interact with a real self-propelled sprayer — the same type you'll operate in-game.</p>
+        </div>
+        
+        <div class="equipment-container reveal-scale">
+            <iframe 
+                title="Self Propelled Sprayer" 
+                frameborder="0" 
+                allowfullscreen 
+                mozallowfullscreen="true" 
+                webkitallowfullscreen="true" 
+                allow="autoplay; fullscreen; xr-spatial-tracking" 
+                xr-spatial-tracking 
+                execution-while-out-of-viewport 
+                execution-while-not-rendered 
+                web-share 
+                src="https://sketchfab.com/models/ac8dfb138ac94a2cbbe4d0aa7f1e448f/embed?autostart=1&preload=1&ui_infos=0&ui_controls=1&ui_stop=0&ui_watermark=0&ui_theme=dark&ui_hint=0"
+            ></iframe>
+        </div>
+        
+        <div class="equipment-caption reveal">
+            <p data-en="↔️ Drag to rotate · Scroll to zoom · Right-click to pan" data-es="↔️ Arrastra para rotar · Scroll para zoom · Clic derecho para panoramica">↔️ Drag to rotate · Scroll to zoom · Right-click to pan</p>
         </div>
     </section>
 
@@ -1822,409 +2019,18 @@
         animateCounter('twitter-followers', 423);
         animateCounter('newsletter-subs', 89);
 
-        // ========== THREE.JS 3D HERO SCENE — REALISTIC TRACTOR ==========
-        const canvas = document.getElementById('hero-3d');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
-        
-        // ========== REALISTIC TRACTOR BUILD ==========
-        const tractorGroup = new THREE.Group();
-        
-        // Materials - realistic agri colors
-        const paintGreen = new THREE.MeshStandardMaterial({ 
-            color: 0x1e4d1e, 
-            metalness: 0.3, 
-            roughness: 0.5,
-            envMapIntensity: 1.0
-        });
-        const paintDarkGreen = new THREE.MeshStandardMaterial({ 
-            color: 0x0f2f0f, 
-            metalness: 0.3, 
-            roughness: 0.6 
-        });
-        const rubber = new THREE.MeshStandardMaterial({ 
-            color: 0x1a1a1a, 
-            metalness: 0.0, 
-            roughness: 0.9 
-        });
-        const metal = new THREE.MeshStandardMaterial({ 
-            color: 0x888888, 
-            metalness: 0.8, 
-            roughness: 0.2 
-        });
-        const glass = new THREE.MeshPhysicalMaterial({ 
-            color: 0x88bbdd, 
-            metalness: 0.1, 
-            roughness: 0.05, 
-            transmission: 0.6,
-            transparent: true,
-            opacity: 0.7
-        });
-        const headlightMat = new THREE.MeshStandardMaterial({ 
-            color: 0xffffee, 
-            emissive: 0xffffaa, 
-            emissiveIntensity: 2 
-        });
-        const exhaustMat = new THREE.MeshStandardMaterial({ 
-            color: 0x444444, 
-            metalness: 0.9, 
-            roughness: 0.3 
-        });
-        
-        // Chassis / Main body
-        const chassisGeo = new THREE.BoxGeometry(1.6, 0.5, 0.9);
-        const chassis = new THREE.Mesh(chassisGeo, paintGreen);
-        chassis.position.y = 0.6;
-        chassis.castShadow = true;
-        tractorGroup.add(chassis);
-        
-        // Engine hood (front, tapered)
-        const hoodGeo = new THREE.BoxGeometry(0.9, 0.55, 0.85);
-        const hood = new THREE.Mesh(hoodGeo, paintGreen);
-        hood.position.set(0.45, 0.9, 0);
-        hood.castShadow = true;
-        tractorGroup.add(hood);
-        
-        // Hood grill
-        const grillGeo = new THREE.BoxGeometry(0.05, 0.45, 0.6);
-        const grill = new THREE.Mesh(grillGeo, new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.7, roughness: 0.4 }));
-        grill.position.set(0.92, 0.9, 0);
-        tractorGroup.add(grill);
-        
-        // Cab / Cabin
-        const cabBaseGeo = new THREE.BoxGeometry(0.7, 0.1, 0.8);
-        const cabBase = new THREE.Mesh(cabBaseGeo, paintDarkGreen);
-        cabBase.position.set(-0.35, 1.05, 0);
-        tractorGroup.add(cabBase);
-        
-        const cabFrameGeo = new THREE.BoxGeometry(0.65, 0.8, 0.75);
-        const cabFrame = new THREE.Mesh(cabFrameGeo, paintGreen);
-        cabFrame.position.set(-0.35, 1.5, 0);
-        cabFrame.castShadow = true;
-        tractorGroup.add(cabFrame);
-        
-        // Cab windows (glass panels)
-        const windowFrontGeo = new THREE.PlaneGeometry(0.55, 0.5);
-        const windowFront = new THREE.Mesh(windowFrontGeo, glass);
-        windowFront.position.set(0.02, 1.55, 0);
-        windowFront.rotation.y = Math.PI / 2;
-        tractorGroup.add(windowFront);
-        
-        const windowSideGeo = new THREE.PlaneGeometry(0.6, 0.5);
-        const windowLeft = new THREE.Mesh(windowSideGeo, glass);
-        windowLeft.position.set(-0.35, 1.55, 0.38);
-        tractorGroup.add(windowLeft);
-        
-        const windowRight = new THREE.Mesh(windowSideGeo, glass);
-        windowRight.position.set(-0.35, 1.55, -0.38);
-        windowRight.rotation.y = Math.PI;
-        tractorGroup.add(windowRight);
-        
-        // Cab roof
-        const roofGeo = new THREE.BoxGeometry(0.75, 0.05, 0.85);
-        const roof = new THREE.Mesh(roofGeo, paintDarkGreen);
-        roof.position.set(-0.35, 1.93, 0);
-        tractorGroup.add(roof);
-        
-        // Roof beacon light
-        const beaconGeo = new THREE.CylinderGeometry(0.04, 0.06, 0.08, 8);
-        const beacon = new THREE.Mesh(beaconGeo, new THREE.MeshStandardMaterial({ color: 0xff4400, emissive: 0xff2200, emissiveIntensity: 1 }));
-        beacon.position.set(-0.35, 2.0, 0.25);
-        tractorGroup.add(beacon);
-        
-        // Exhaust pipe
-        const exhaustGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 8);
-        const exhaust = new THREE.Mesh(exhaustGeo, exhaustMat);
-        exhaust.position.set(0.6, 1.3, 0.3);
-        tractorGroup.add(exhaust);
-        
-        const exhaustCapGeo = new THREE.CylinderGeometry(0.05, 0.04, 0.08, 8);
-        const exhaustCap = new THREE.Mesh(exhaustCapGeo, exhaustMat);
-        exhaustCap.position.set(0.6, 1.62, 0.3);
-        tractorGroup.add(exhaustCap);
-        
-        // Headlights
-        const lightGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.08, 12);
-        const lightLeft = new THREE.Mesh(lightGeo, headlightMat);
-        lightLeft.rotation.x = Math.PI / 2;
-        lightLeft.position.set(0.95, 0.75, 0.25);
-        tractorGroup.add(lightLeft);
-        
-        const lightRight = new THREE.Mesh(lightGeo, headlightMat);
-        lightRight.rotation.x = Math.PI / 2;
-        lightRight.position.set(0.95, 0.75, -0.25);
-        tractorGroup.add(lightRight);
-        
-        // Wheels - realistic tractor proportions
-        function createWheel(radius, width, x, y, z, isRear) {
-            const wheelGroup = new THREE.Group();
-            
-            // Tire
-            const tireGeo = new THREE.CylinderGeometry(radius, radius, width, 24);
-            const tire = new THREE.Mesh(tireGeo, rubber);
-            tire.rotation.z = Math.PI / 2;
-            tire.castShadow = true;
-            wheelGroup.add(tire);
-            
-            // Rim
-            const rimRadius = radius * 0.55;
-            const rimGeo = new THREE.CylinderGeometry(rimRadius, rimRadius, width * 0.6, 16);
-            const rim = new THREE.Mesh(rimGeo, metal);
-            rim.rotation.z = Math.PI / 2;
-            wheelGroup.add(rim);
-            
-            // Hub
-            const hubGeo = new THREE.CylinderGeometry(rimRadius * 0.3, rimRadius * 0.3, width * 0.7, 8);
-            const hub = new THREE.Mesh(hubGeo, metal);
-            hub.rotation.z = Math.PI / 2;
-            wheelGroup.add(hub);
-            
-            // Lug nuts
-            for (let i = 0; i < 6; i++) {
-                const lugGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.04, 6);
-                const lug = new THREE.Mesh(lugGeo, new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.9, roughness: 0.2 }));
-                const angle = (i / 6) * Math.PI * 2;
-                lug.rotation.z = Math.PI / 2;
-                lug.position.set(
-                    (width * 0.4) * Math.sign(x),
-                    Math.cos(angle) * rimRadius * 0.6,
-                    Math.sin(angle) * rimRadius * 0.6
-                );
-                wheelGroup.add(lug);
-            }
-            
-            // Tread pattern (simplified as raised bumps)
-            if (isRear) {
-                for (let i = 0; i < 12; i++) {
-                    const treadGeo = new THREE.BoxGeometry(width * 0.9, 0.03, 0.08);
-                    const tread = new THREE.Mesh(treadGeo, rubber);
-                    const angle = (i / 12) * Math.PI * 2;
-                    tread.position.set(0, Math.cos(angle) * radius * 1.01, Math.sin(angle) * radius * 1.01);
-                    tread.rotation.x = -angle;
-                    wheelGroup.add(tread);
-                }
-            }
-            
-            wheelGroup.position.set(x, y, z);
-            return wheelGroup;
+        // ========== EQUIPMENT SHOWCASE — DUST PARTICLES ==========
+        const showcase = document.querySelector('.equipment-showcase');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'dust-particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = 40 + Math.random() * 60 + '%';
+            p.style.animationDelay = Math.random() * 8 + 's';
+            p.style.animationDuration = (6 + Math.random() * 6) + 's';
+            showcase.appendChild(p);
         }
-        
-        // Rear wheels (bigger)
-        const rearLeft = createWheel(0.6, 0.35, -0.45, 0.6, 0.55, true);
-        const rearRight = createWheel(0.6, 0.35, -0.45, 0.6, -0.55, true);
-        tractorGroup.add(rearLeft);
-        tractorGroup.add(rearRight);
-        
-        // Front wheels (smaller)
-        const frontLeft = createWheel(0.38, 0.22, 0.55, 0.38, 0.45, false);
-        const frontRight = createWheel(0.38, 0.22, 0.55, 0.38, -0.45, false);
-        tractorGroup.add(frontLeft);
-        tractorGroup.add(frontRight);
-        
-        // Fenders
-        const fenderGeo = new THREE.CylinderGeometry(0.7, 0.7, 0.15, 24, 1, false, 0, Math.PI);
-        const fenderLeft = new THREE.Mesh(fenderGeo, paintGreen);
-        fenderLeft.rotation.z = Math.PI / 2;
-        fenderLeft.rotation.x = Math.PI;
-        fenderLeft.position.set(-0.45, 0.85, 0.55);
-        tractorGroup.add(fenderLeft);
-        
-        const fenderRight = new THREE.Mesh(fenderGeo, paintGreen);
-        fenderRight.rotation.z = Math.PI / 2;
-        fenderRight.position.set(-0.45, 0.85, -0.55);
-        tractorGroup.add(fenderRight);
-        
-        // Hitch / 3-point linkage at back
-        const hitchGeo = new THREE.BoxGeometry(0.15, 0.08, 0.3);
-        const hitch = new THREE.Mesh(hitchGeo, metal);
-        hitch.position.set(-0.95, 0.35, 0);
-        tractorGroup.add(hitch);
-        
-        // Position the whole tractor
-        tractorGroup.position.set(2, -0.3, -2);
-        tractorGroup.rotation.y = -0.3;
-        scene.add(tractorGroup);
-        
-        // ========== ENVIRONMENT / FIELD ==========
-        // Ground plane with slight variation
-        const groundGeo = new THREE.PlaneGeometry(30, 30, 32, 32);
-        const groundPositions = groundGeo.attributes.position;
-        for (let i = 0; i < groundPositions.count; i++) {
-            const x = groundPositions.getX(i);
-            const y = groundPositions.getY(i);
-            const z = Math.sin(x * 0.3) * Math.cos(y * 0.3) * 0.15 + Math.random() * 0.05;
-            groundPositions.setZ(i, z);
-        }
-        groundGeo.computeVertexNormals();
-        
-        const groundMat = new THREE.MeshStandardMaterial({ 
-            color: 0x2a5a1a, 
-            roughness: 0.9,
-            metalness: 0.0
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -0.1;
-        ground.receiveShadow = true;
-        scene.add(ground);
-        
-        // Dirt patches / rows
-        for (let i = -5; i < 5; i++) {
-            const rowGeo = new THREE.BoxGeometry(0.3, 0.02, 12);
-            const rowMat = new THREE.MeshStandardMaterial({ color: 0x5a3a1a, roughness: 1.0 });
-            const row = new THREE.Mesh(rowGeo, rowMat);
-            row.position.set(i * 0.8, 0.05, 0);
-            row.rotation.y = Math.random() * 0.1;
-            scene.add(row);
-        }
-        
-        // Floating particles (dust/pollen)
-        const particles = new THREE.Group();
-        for (let i = 0; i < 50; i++) {
-            const pGeo = new THREE.SphereGeometry(0.02, 4, 4);
-            const pMat = new THREE.MeshBasicMaterial({ 
-                color: 0xd4a843, 
-                transparent: true, 
-                opacity: 0.4 + Math.random() * 0.4 
-            });
-            const p = new THREE.Mesh(pGeo, pMat);
-            p.position.set(
-                (Math.random() - 0.5) * 15,
-                Math.random() * 5,
-                (Math.random() - 0.5) * 10
-            );
-            p.userData = {
-                speed: 0.2 + Math.random() * 0.5,
-                offset: Math.random() * Math.PI * 2,
-                originalY: p.position.y
-            };
-            particles.add(p);
-        }
-        scene.add(particles);
-        
-        // ========== LIGHTING ==========
-        const ambientLight = new THREE.AmbientLight(0x406040, 0.6);
-        scene.add(ambientLight);
-        
-        const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.5);
-        sunLight.position.set(8, 12, 5);
-        sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        sunLight.shadow.camera.near = 0.5;
-        sunLight.shadow.camera.far = 50;
-        sunLight.shadow.camera.left = -15;
-        sunLight.shadow.camera.right = 15;
-        sunLight.shadow.camera.top = 15;
-        sunLight.shadow.camera.bottom = -15;
-        scene.add(sunLight);
-        
-        const fillLight = new THREE.DirectionalLight(0x88bbff, 0.4);
-        fillLight.position.set(-5, 5, -5);
-        scene.add(fillLight);
-        
-        const rimLight = new THREE.SpotLight(0xd4a843, 0.8, 20, Math.PI / 4, 0.5);
-        rimLight.position.set(-5, 3, 5);
-        rimLight.target = tractorGroup;
-        scene.add(rimLight);
-        
-        // ========== CAMERA SETUP ==========
-        camera.position.set(4, 2.5, 4);
-        camera.lookAt(0, 0.5, 0);
-        
-        // ========== MOUSE INTERACTION ==========
-        let mouseX = 0, mouseY = 0;
-        let targetMouseX = 0, targetMouseY = 0;
-        
-        document.addEventListener('mousemove', (e) => {
-            targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
-        });
-        
-        // ========== SCROLL PROGRESS ==========
-        let scrollProgress = 0;
-        let maxScroll = document.body.scrollHeight - window.innerHeight;
-        
-        window.addEventListener('scroll', () => {
-            maxScroll = document.body.scrollHeight - window.innerHeight;
-            scrollProgress = Math.min(window.scrollY / maxScroll, 1);
-        });
-        
-        // ========== ANIMATION LOOP ==========
-        const clock = new THREE.Clock();
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-            const delta = clock.getDelta();
-            
-            // Smooth mouse follow
-            mouseX += (targetMouseX - mouseX) * 0.04;
-            mouseY += (targetMouseY - mouseY) * 0.04;
-            
-            // Camera cinematic movement
-            // Start: side angle looking at tractor
-            // As scroll increases: orbit around, then rise up for aerial view
-            const baseAngle = -0.3 + mouseX * 0.4;
-            const orbitAngle = time * 0.1 + scrollProgress * Math.PI * 0.5;
-            
-            camera.position.x = Math.cos(baseAngle + orbitAngle * 0.3) * (5 - scrollProgress * 2);
-            camera.position.z = Math.sin(baseAngle + orbitAngle * 0.3) * (5 - scrollProgress * 2);
-            camera.position.y = 2.5 + mouseY * 0.5 + scrollProgress * 3;
-            camera.lookAt(0, 0.5 + scrollProgress * 0.5, 0);
-            
-            // Tractor idle animation
-            tractorGroup.position.y = -0.3 + Math.sin(time * 0.6) * 0.03;
-            tractorGroup.rotation.z = Math.sin(time * 0.4) * 0.01;
-            
-            // Subtle engine vibration
-            tractorGroup.position.x = 2 + Math.sin(time * 8) * 0.002;
-            
-            // Headlights pulse
-            const pulse = 1.5 + Math.sin(time * 3) * 0.5;
-            headlightMat.emissiveIntensity = pulse;
-            
-            // Beacon rotates
-            beacon.rotation.y = time * 3;
-            beacon.material.emissiveIntensity = 1 + Math.sin(time * 5) * 0.5;
-            
-            // Exhaust heat shimmer (simulated by slight scale)
-            exhaustCap.scale.set(
-                1 + Math.sin(time * 10) * 0.05,
-                1,
-                1 + Math.sin(time * 10) * 0.05
-            );
-            
-            // Particles drift
-            particles.children.forEach(p => {
-                p.position.y = p.userData.originalY + Math.sin(time * p.userData.speed + p.userData.offset) * 0.3;
-                p.position.x += Math.sin(time * 0.2 + p.userData.offset) * 0.002;
-                p.rotation.x += 0.01;
-                p.rotation.y += 0.01;
-            });
-            
-            // Sun moves slightly for dynamic shadows
-            sunLight.position.x = 8 + Math.sin(time * 0.1) * 2;
-            
-            renderer.render(scene, camera);
-        }
-        
-        animate();
-        
-        // ========== RESIZE HANDLER ==========
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-        
+
         // Parallax effect for hero
         gsap.to('.hero-grid', {
             yPercent: 30,
